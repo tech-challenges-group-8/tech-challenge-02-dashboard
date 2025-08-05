@@ -1,69 +1,95 @@
-# React + TypeScript + Vite
+# Financial Management App - Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a **Financial Management** application built with [Vite](https://vitejs.dev), [Material-UI](https://mui.com/), and [React Router](https://reactrouter.com/). The app provides a clean and responsive interface for managing financial data, including dashboards, transactions, investments, and services.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Vite**: Fast build tool with hot module replacement and optimized performance.
+- **Material-UI**: Modern and accessible UI components.
+- **React Router**: Client-side routing for seamless navigation.
+- **ESLint**: Code linting with custom rules for clean and maintainable code.
+- **TypeScript**: Strongly typed codebase for better developer experience.
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Make sure you have the following installed on your system:
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- [Node.js](https://nodejs.org/) (v23 or higher recommended)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+First, clone the repository and install the dependencies:
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Running the Development Server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+To start the development server, run:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+Open http://localhost:5173 in your browser to view the app.
+
+## Building for Production
+To build the app for production, run:
+
+```bash
+npm run build
+```
+The optimized production build will be output to the dist directory. You can then preview the production build with:
+
+```bash
+npm run preview
+```
+## Linting the Code
+To check for linting issues, run:
+
+```bash
+npm run lint
+```
+To automatically fix linting issues, run:
+
+```bash
+npm run lint:fix
+```
+
+## Module federation
+
+Para rodar esse projeto localmente junto ao projeto principal `tech-challange-02`, é preciso rodar em modo produção:
+
+```bash
+npm run build
+npm run preview
+```
+
+## Docker e Docker Compose
+
+Este projeto inclui um `Dockerfile` para criar a imagem do frontend.
+
+### Pré-requisitos
+
+- [Docker](https://www.docker.com/get-started)
+
+### Como usar
+
+ **Build imagem local:**
+
+   No diretório raiz do projeto, execute:
+
+   ```bash
+   docker build . -t tech-challange-front-dashboard
+   ```
+
+## Authors
+
+- <img src="https://avatars.githubusercontent.com/u/132622525?v=4" width="24" height="24" alt="Fernando Gustavo Cortez" style="border-radius: 50%; vertical-align: middle;"> **Fernando Gustavo Cortez** - [https://github.com/FernandoGustavoCortez](https://github.com/FernandoGustavoCortez)
+
+- <img src="https://avatars.githubusercontent.com/u/37480857?v=4" width="24" height="24" alt="Lucas Wenceslau" style="border-radius: 50%; vertical-align: middle;"> **Lucas Wenceslau** - [https://github.com/lucaswenceslau](https://github.com/lucaswenceslau)
+
+- <img src="https://avatars.githubusercontent.com/u/71905861?v=4" width="24" height="24" alt="Osmar" style="border-radius: 50%; vertical-align: middle;"> **Osmar** - [https://github.com/MazFilho](https://github.com/MazFilho)
+
+- <img src="https://avatars.githubusercontent.com/u/13469487?v=4" width="24" height="24" alt="Vittoria Zago" style="border-radius: 50%; vertical-align: middle;"> **Vittoria Zago** - [https://github.com/vittoriazago](https://github.com/vittoriazago)
