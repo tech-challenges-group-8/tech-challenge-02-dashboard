@@ -1,145 +1,97 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { useMemo } from "react";
+import type { ChartOptions } from "chart.js";
 import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
   Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const chartOptions: ChartOptions<"line"> = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "top",
+    },
+    title: {
+      display: true,
+      text: "Evolução das Transações no Tempo",
+    },
+  },
+};
+interface Transaction {
+  accountId: string;
+  date: string;
+  id: string;
+  type: string;
+  value: number;
+}
 
 interface DashboardProps {
-  initialTransactions?: Transaction[];
+  transactions: Transaction[];
 }
 
-interface ChartData {
-  date: string;
-  deposits: number;
-  transactions: number;
-}
-
-interface Transaction {
-  id: string;
-  accountId: string;
-  type: "DEPOSIT" | "TRANSFER";
-  value: number;
-  date: string;
-}
-
-const data: Transaction[] = [
-  { id: "1", accountId: "", date: "2025-08-01", value: 100, type: "DEPOSIT" },
-  { id: "2", accountId: "", date: "2025-08-02", value: 250, type: "TRANSFER" },
-];
-
-function Dashboard({ initialTransactions }: DashboardProps) {
-  const theme = useTheme();
-  const transactions: Transaction[] = initialTransactions || data;
-
-  const uniqueTransactions = Array.from(
-    new Map(transactions?.map((t) => [t.id, t])).values()
-  );
-
-  // Group transactions by date and separate deposits from withdrawals
-  const chartData = uniqueTransactions.reduce<
-    Record<string, { deposits: number; transactions: number }>
-  >((acc, transaction) => {
-    const dateKey = new Date(transaction.date).toLocaleDateString();
-
-    if (!acc[dateKey]) {
-      acc[dateKey] = { deposits: 0, transactions: 0 };
+function Dashboard({ transactions } : DashboardProps) {
+  const chartData = useMemo(() => {
+    if (!transactions || transactions.length === 0) {
+      return { labels: [], datasets: [] };
     }
 
-    if (transaction.type !== "TRANSFER") {
-      acc[dateKey].deposits += transaction.value;
-    } else {
-      acc[dateKey].transactions += Math.abs(transaction.value);
-    }
+    const sorted = [...transactions].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
 
-    return acc;
-  }, {});
+    return {
+      labels: sorted.map((t) =>
+        new Date(t.date).toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+        })
+      ),
 
-  const formattedData: ChartData[] = Object.entries(chartData)
-    .map(([date, amounts]) => ({
-      date,
-      deposits: amounts.deposits,
-      transactions: amounts.transactions,
-    }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      datasets: [
+        {
+          label: "Depósitos",
+          data: sorted.map((t) => (t.type === "DEPOSIT" ? t.value : 0)),
+          borderColor: "rgb(75, 192, 192)",
+          backgroundColor: "rgba(75, 192, 192, 0.5)",
+        },
+        {
+          label: "Transferências",
+          data: sorted.map((t) => (t.type === "TRANSFER" ? t.value : 0)),
+          borderColor: "rgb(255, 99, 132)",
+          backgroundColor: "rgba(255, 99, 132, 0.5)",
+        },
+      ],
+    };
+  }, [transactions]);
 
   return (
-    <Box
-      sx={{
-        width: { xs: `calc(100% - ${theme.spacing(2)})`, lg: "800px" },
-        height: {
-          xs: "400px",
-          md: `calc(100vh - 64px - ${theme.spacing(2)} * 2)`,
-        },
-        bgcolor: theme.palette.background.paper,
-        borderRadius: theme.shape.borderRadius,
-        paddingX: { xs: 1, md: 2 },
-        paddingY: { xs: 0.5, md: 1 },
+    <div
+      style={{
+        padding: "20px",
+        width: "100%",
+        maxWidth: "900px",
+        margin: "auto",
       }}
     >
-      <Box
-        sx={{
-          p: 2,
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          mb={theme.spacing(2)}
-          color={theme.palette.primary.main}
-        >
-          {"Transaction Trends"}
-        </Typography>
-
-        <Box sx={{ flexGrow: 1, minHeight: 0 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={formattedData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                tick={{ fontSize: 12 }}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                tick={{ fontSize: 12 }}
-                tickFormatter={(value: number) => `R$ ${value.toFixed(0)}`}
-              />
-              <Tooltip
-                formatter={(value: number, name: string) => [
-                  `R$ ${value.toFixed(2)}`,
-                  name === "deposits" ? "Deposits" : "Transactions",
-                ]}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="deposits"
-                stroke={theme.palette.success.main}
-                strokeWidth={2}
-                name="Deposits"
-                dot={{ fill: theme.palette.success.main, strokeWidth: 2, r: 4 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="transactions"
-                stroke={theme.palette.error.main}
-                strokeWidth={2}
-                name="Transactions"
-                dot={{ fill: theme.palette.error.main, strokeWidth: 2, r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </Box>
-      </Box>
-    </Box>
+      <Line options={chartOptions} data={chartData} />
+    </div>
   );
 }
 
